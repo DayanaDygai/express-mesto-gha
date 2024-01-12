@@ -1,5 +1,6 @@
 import mongoose, { Schema }  from "mongoose";
 
+
 const userSchema = new Schema(
   {
     name: {
@@ -17,9 +18,13 @@ const userSchema = new Schema(
     avatar: {
       type: String,
       required: true,
+      validate: {
+        validator: (url) => IS_URL.test(url),
+        message: 'Некорректный URL',
+      },
     },
   },
-  {},
+  {versionKey: false,},
 );
 
 export default mongoose.model("user", userSchema);

@@ -36,11 +36,11 @@ export const createCard = async (req, res) => {
   try {
     const owner = req.user._id;
     const { name, link } = req.body;
-    const card = await Card.create({ name, link, owner }).findById(card._id).populate("owner");
+    const card = await Card.create({ name, link, owner }).findById(card._id);
     return res.status(STATUS_OK_CREATED).send({
       name: card.name,
       link: card.link,
-      owner: card.owner,});
+      owner: card._id});
   } catch (error) {
     if (error.name === "ValidationError") {
       return res

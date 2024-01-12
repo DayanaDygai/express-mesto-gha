@@ -1,29 +1,37 @@
 import mongoose,  { Schema }  from "mongoose";
+const { ObjectId } = mongoose.Schema.Types;
 
 const cardSchema = new Schema(
   {
     name: {
       type: String,
       required: true,
-      minlength: [2, "минимальная длинна 2 символа"],
-      maxlength: [30, "максимальная длинна 30 символов"],
+      minlength: 2,
+      maxlength: 30,
     },
     link: {
       type: String,
+      validate: {
+        validator: (v) => IS_URL.test(v),
+        message: 'Некорректный URL',
+      },
       required: true,
     },
     owner: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: ObjectId,
       ref: "user",
       required: true,
     },
-    likes: [{ type: mongoose.Schema.Types.ObjectId, default: [], ref: "user" }],
+    likes: [{
+      type: ObjectId,
+      default: [],
+    }],
     createdAt: {
       type: Date,
       default: Date.now,
     },
   },
-  {},
+  {versionKey: false,},
 );
 
 export default mongoose.model("card", cardSchema);
