@@ -3,12 +3,12 @@ import "dotenv/config";
 import router from "./routes/index.js";
 import mongoose from "mongoose";
 
-const { PORT } = process.env;
+const { PORT, MONGO_URL } = process.env;
 const app = express();
 
 mongoose.connect("mongodb://127.0.0.1:27017/mestodb");
 app.use(express.json());
-
+app.use(express.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
   req.user = {

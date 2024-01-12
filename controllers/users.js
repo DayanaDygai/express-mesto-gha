@@ -26,11 +26,11 @@ export const getUsers = async (req, res) => {
 
 export const getUserById = async (req, res) => {
   try {
-    const { userId } = req.params.userId;
+    const { userId } = req.params;
     const user = await User.findById(userId).orFail(
       () => new Error("NotFoundError"),
     );
-    res.status(STATUS_OK).send({ user });
+    res.status(STATUS_OK).send({ data: user });
   } catch (error) {
     if (error.name === "CastError") {
       return res
@@ -45,22 +45,15 @@ export const getUserById = async (req, res) => {
 
 export const createUser = async (req, res) => {
   try {
-    const { _id, name, about, avatar } = req.body;
-    const user = await User.create({_id , name, about, avatar, });
-    return res.status(STATUS_OK_CREATED).send(user);
+    const newUser = await User.create(req.body);
+    return res.status(STATUS_OK_CREATED).send(newUser);
   } catch (error) {
-    if (error.message === "ValidationError") {
+    if (error.name === "ValidationError") {
       return res
         .status(INCORRECT_DATA)
         .send({
-          message: "Некорректные данные"
-        });
-    }
-    if (error.code === MONGO_DUPLICATE_ERROR) {
-      return res
-        .status(NOT_FOUND_ERROR)
-        .send({
-          message: "Такой пользовательно уже существует"
+          message: "Переданны не валидные данные",
+          error: error.message,
         });
     }
     return res
@@ -96,13 +89,13 @@ export const editInfoUser = async (req, res) => {
 
 export const editAvatarUser = async (req, res) => {
   try {
-    const { avatar } = req.body.avatar;
+    const { avatar } = req.body;
     const user = await User.findByIdAndUpdate(
       req.user._id,
       { avatar },
       { new: "true", runValidators: true },
     ).orFail(() => new Error("NotFoundError"));
-    return res.status(STATUS_OK).send({ avatar: user.avatar });
+    return res.status(STATUS_OK_CREATED).send({avatar: user.avatar});
   } catch (error) {
     if (error.name === "ValidationError") {
       return res
