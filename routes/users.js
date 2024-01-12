@@ -5,7 +5,7 @@ import {
   getUsers,
   editInfoUser,
   editAvatarUser,
-} from "../controllers/users";
+} from "../controllers/users.js";
 
 const userRouter = Router();
 
