@@ -5,21 +5,22 @@ const cardSchema = new Schema(
   {
     name: {
       type: String,
-      required: true,
+      required: [true, 'Поле name является обязательным'],
       minlength: [2, "минимальная длинна 2 символа"],
       maxlength: [30, "максимальная длинна 30 символов"],
     },
     link: {
       type: String,
-      required: true,
+      required: [true, 'Поле link является обязательным'],
     },
     owner: {
-      type:  mongoose.Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "user",
-      required: true,
+      required: [true, 'Поле owner является обязательным'],
     },
     likes: [{
-      type: [{ type: mongoose.Schema.Types.ObjectId, default: [], ref: "user" }],
+      type: [{ type: mongoose.Schema.Types.ObjectId, ref: "user" }],
+      default: [],
     }],
     createdAt: {
       type: Date,

@@ -12,11 +12,11 @@ const STATUS_OK = 200;
 
 const STATUS_OK_CREATED = 201;
 //запрос выполнен и создан новый ресурс
-
+let cards = [];
 export const getCards = async (req, res) => {
   try {
     const cards = await Card.find({});
-    return res.status(STATUS_OK).send({cards});
+    return res.status(STATUS_OK).send(cards);
   } catch (error) {
     return res
       .status(SERVER_ERROR)
@@ -30,10 +30,7 @@ export const createCard = async (req, res) => {
     const { name, link } = req.body;
     const card = await Card.create({ name, link, owner }).orFail(
       () => new Error(NOT_FOUND_ERROR));;
-    return res.status(STATUS_OK_CREATED).send({
-      name: card.name,
-      link: card.link,
-      owner: card._id});
+    return res.status(STATUS_OK_CREATED).send(card);
   } catch (error) {
     if (error.name === "ValidationError") {
       return res
@@ -50,14 +47,19 @@ export const createCard = async (req, res) => {
 
 export const deleteCardById = async (req, res) => {
   try {
-    const { CardId } = req.params;
-    const deletedCard = await Card.deleteOne(CardId).orFail(
-      () => new Error(NOT_FOUND_ERROR));
+    const card = await Card.findOne({ _id: req.params.cardId });
+    if (!card) {
+      return res.status(NOT_FOUND_ERROR.send('Карточка с указанным _id не найдена.'));
+    }
+    const deletedCard = await Card.findOneAndDelete({ _id: req.params.cardId }).orFail(
+      () => new Error('NotFoundError'),
+    );
+
     return res.status(OK).send({ deletedCard });
   } catch (error) {
-    if (error.name === "CastError") {
-      return res.status(INCORRECT_DATA).send({ message: error.message });
-    }
+    // if (error.name === "CastError") {
+    //   return res.status(INCORRECT_DATA).send({ message: error.message });
+    // }
     return res
       .status(SERVER_ERROR)
       .send({ message: "ошибка на стороне сервера" });
@@ -71,7 +73,7 @@ export const likeCard = async (req, res) => {
       { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
       { new: true }).orFail(() => new Error(NOT_FOUND_ERROR));
 
-    return res.status(STATUS_OK).send({card});
+    return res.status(STATUS_OK).send(card);
   } catch (error) {
     if (error.name === "CastError") {
       return res.status(INCORRECT_DATA).send({ message: error.message });
