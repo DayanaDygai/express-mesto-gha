@@ -16,7 +16,7 @@ const STATUS_OK_CREATED = 201;
 export const getCards = async (req, res) => {
   try {
     const cards = await Card.find({});
-    return res.status(STATUS_OK).send(cards);
+    return res.status(STATUS_OK).send({cards});
   } catch (error) {
     if (error.name === "ValidationError") {
       return res
@@ -34,11 +34,15 @@ export const getCards = async (req, res) => {
 
 export const createCard = async (req, res) => {
   try {
+    const owner = req.user._id;
     const { name, link } = req.body;
-    const createCard = await Card.create({ name, link, owner: req.user._id })
+    const card = await Card.create({ name, link, owner })
       .findById(card._id)
       .populate("owner");
-    return res.status(STATUS_OK_CREATED).send(createCard);
+    return res.status(STATUS_OK_CREATED).send({
+      name: card.name,
+      link: card.link,
+      owner: card.owner,});
   } catch (error) {
     if (error.name === "ValidationError") {
       return res
@@ -56,10 +60,10 @@ export const createCard = async (req, res) => {
 
 export const deleteCardById = async (req, res) => {
   try {
-    const card = await Card.findByIdAndDelete(req.params.cardId).orFail(
-      () => new Error(NOT_FOUND_ERROR),
-    );
-    return res.status(STATUS_OK).send({ message: `${card} удалена` });
+    const { CardId } = req.params;
+    const deletedCard = await Card.deleteOne(CardId).orFail(
+      () => new Error(NOT_FOUND_ERROR));
+    return res.status(OK).send({ deletedCard });
   } catch (error) {
     if (error.name === "CastError") {
       return res.status(INCORRECT_DATA).send({ message: error.message });
@@ -72,12 +76,14 @@ export const deleteCardById = async (req, res) => {
 
 export const likeCard = async (req, res) => {
   try {
-    const cardLike = await Card.findByIdAndUpdate(
-      req.params.cardId,
-      { $addToSet: { likes: req.user._id } },
+    const owner = req.user._id;
+    const { CardId } = req.params;
+    const card = await Card.findByIdAndUpdate(
+      CardId,
+      { $addToSet: { likes: owner } },
       { new: true },
     ).orFail(() => new Error(NOT_FOUND_ERROR));
-    return res.status(STATUS_OK).send({ message: `${cardLike} поставлен` });
+    return res.status(STATUS_OK).send({ card });
   } catch (error) {
     if (error.name === "CastError") {
       return res.status(INCORRECT_DATA).send({ message: error.message });
@@ -90,12 +96,14 @@ export const likeCard = async (req, res) => {
 
 export const deleteLikeCard = async (req, res) => {
   try {
-    const deleteLikeCard = await Card.findByIdAndUpdate(
-      req.params.cardId,
-      { $pull: { likes: req.user._id } },
+    const owner = req.user._id;
+    const { CardId } = req.params;
+    const card = await Card.findByIdAndUpdate(
+      CardId,
+      { $pull: { likes: owner } },
       { new: true },
     ).orFail(() => new Error(NOT_FOUND_ERROR));
-    return res.status(STATUS_OK).send({ message: `${deleteLikeCard} удален` });
+    return res.status(STATUS_OK).send({ card });
   } catch (error) {
     if (error.name === "CastError") {
       return res.status(INCORRECT_DATA).send({ message: error.message });
@@ -106,6 +114,4 @@ export const deleteLikeCard = async (req, res) => {
   }
 };
 
-// module.exports.createCard = (req, res) => {
-//   console.log(req.user._id); // _id станет доступен
-// };
+

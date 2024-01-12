@@ -1,4 +1,4 @@
-import User from "../models/User.js";
+import User from "../models/User";
 
 const INCORRECT_DATA = 400;
 // переданы некорректные данные в методы создания карточки, пользователя, обновления аватара пользователя или профиля;
@@ -30,7 +30,7 @@ export const getUserById = async (req, res) => {
     const user = await User.findById(userId).orFail(
       () => new Error("NotFoundError"),
     );
-    res.status(STATUS_OK).send(user);
+    res.status(STATUS_OK).send({ data: user });
   } catch (error) {
     if (error.message === "NotFoundError") {
       return res
@@ -70,12 +70,13 @@ export const createUser = async (req, res) => {
 export const editInfoUser = async (req, res) => {
   try {
     const { name, about } = req.body;
-    const userEdit = await User.findByIdAndUpdate(
+    const user = await User.findByIdAndUpdate(
       req.user._id,
       { name, about },
       { new: true, runValidators: true },
-    );
-    return res.status(STATUS_OK_CREATED).send(userEdit);
+    ).orFail(() => new Error("NotFoundError"));
+    return res.status(STATUS_OK_CREATED).send({name: user.name,
+      about: user.about,});
   } catch (error) {
     if (error.name === "ValidationError") {
       return res
@@ -93,12 +94,13 @@ export const editInfoUser = async (req, res) => {
 
 export const editAvatarUser = async (req, res) => {
   try {
-    const editAvatar = User.findByIdAndUpdate(
+    const { avatar } = req.body;
+    const user = User.findByIdAndUpdate(
       req.user._id,
       { avatar: req.body.avatar },
       { new: "true", runValidators: true },
-    );
-    return res.status(STATUS_OK_CREATED).send(editAvatar);
+    ).orFail(() => new Error("NotFoundError"));
+    return res.status(STATUS_OK_CREATED).send({avatar: user.avatar});
   } catch (error) {
     if (error.name === "ValidationError") {
       return res
