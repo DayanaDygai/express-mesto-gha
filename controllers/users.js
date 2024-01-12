@@ -45,15 +45,25 @@ export const getUserById = async (req, res) => {
 
 export const createUser = async (req, res) => {
   try {
-    const newUser = await User.create(req.body);
-    return res.status(STATUS_OK_CREATED).send(newUser);
+    const { name, about, avatar } = req.body;
+    const user = await User.create({ name, about, avatar });
+    return res.status(STATUS_OK_CREATED).send({_id: user._id,
+      name: user.name,
+      about: user.about,
+      avatar: user.avatar, });
   } catch (error) {
     if (error.name === "ValidationError") {
       return res
         .status(INCORRECT_DATA)
         .send({
-          message: "Переданны не валидные данные",
-          error: error.message,
+          message: "Некорректные данные"
+        });
+    }
+    if (error.code === MONGO_DUPLICATE_ERROR) {
+      return res
+        .status(NOT_FOUND_ERROR)
+        .send({
+          message: "Такой пользовательно уже существует"
         });
     }
     return res
