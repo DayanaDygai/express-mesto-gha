@@ -12,7 +12,7 @@ const STATUS_OK = 200;
 
 const STATUS_OK_CREATED = 201;
 //запрос выполнен и создан новый ресурс
-let cards = [];
+
 export const getCards = async (req, res) => {
   try {
     const cards = await Card.find({});
@@ -29,7 +29,7 @@ export const createCard = async (req, res) => {
     const owner = req.user._id;
     const { name, link } = req.body;
     const card = await Card.create({ name, link, owner }).orFail(
-      () => new Error(NOT_FOUND_ERROR));;
+      () => new Error(NOT_FOUND_ERROR));
     return res.status(STATUS_OK_CREATED).send(card);
   } catch (error) {
     if (error.name === "ValidationError") {

@@ -24,32 +24,29 @@ export const getUsers = async (req, res) => {
   }
 };
 
-export const getUserById = (req, res) => {
-  User.findById(req.params.userId)
-    .then((user) => {
-      if (!user) {
-        res
-          .status(NOT_FOUND_ERROR)
-          .send({ message: "Пользователь с таким ID не найден" });
-        return;
-      }
-      res.status(STATUS_OK).send(user);
-    })
-    .catch((error) =>
-      error.name === "CastError"
-        ? res.status(NOT_FOUND_ERROR).send({ message: error.mssage })
-        : res
-            .status(SERVER_ERROR)
-            .send({ message: `Ошибка сервера: ${error}` })
+export const getUserById = async (req, res) => {
+  try {
+    const { userId } = req.params.userId;
+    const user = await User.findById(userId).orFail(
+      () => new Error("NotFoundError"),
     );
+    res.status(STATUS_OK).send({ user });
+  } catch (error) {
+    if (error.name === "CastError") {
+      return res
+        .status(NOT_FOUND_ERROR)
+        .send({ message: "Передан не валидный ID" });
+    }
+    return res
+      .status(SERVER_ERROR)
+      .send({ message: "Ошибка на стороне сервера" });
+  }
 };
-
-
 
 export const createUser = async (req, res) => {
   try {
     const { _id, name, about, avatar } = req.body;
-    const user = await User.create({ name, about, avatar, _id });
+    const user = await User.create({_id , name, about, avatar, });
     return res.status(STATUS_OK_CREATED).send(user);
   } catch (error) {
     if (error.message === "ValidationError") {
