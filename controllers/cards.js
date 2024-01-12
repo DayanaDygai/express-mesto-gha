@@ -18,25 +18,18 @@ export const getCards = async (req, res) => {
     const cards = await Card.find({});
     return res.status(STATUS_OK).send({cards});
   } catch (error) {
-    if (error.name === "ValidationError") {
-      return res
-        .status(INCORRECT_DATA)
-        .send({
-          message: "Переданны не валидные данные",
-          error: error.message,
-        });
-    }
     return res
       .status(SERVER_ERROR)
       .send({ message: "ошибка на стороне сервера" });
-  }
+    }
 };
 
 export const createCard = async (req, res) => {
   try {
     const owner = req.user._id;
     const { name, link } = req.body;
-    const card = await Card.create({ name, link, owner }).findById(card._id);
+    const card = await Card.create({ name, link, owner }).orFail(
+      () => new Error(NOT_FOUND_ERROR));;
     return res.status(STATUS_OK_CREATED).send({
       name: card.name,
       link: card.link,

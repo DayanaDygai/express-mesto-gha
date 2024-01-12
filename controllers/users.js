@@ -26,15 +26,15 @@ export const getUsers = async (req, res) => {
 
 export const getUserById = async (req, res) => {
   try {
-    const { userId } = req.params;
+    const { userId } = req.params.userId;
     const user = await User.findById(userId).orFail(
-      () => new Error(NOT_FOUND_ERROR),
+      () => new Error("NotFoundError"),
     );
     res.status(STATUS_OK).send({ user });
   } catch (error) {
     if (error.name === "CastError") {
       return res
-        .status(INCORRECT_DATA)
+        .status(NOT_FOUND_ERROR)
         .send({ message: "Передан не валидный ID" });
     }
     return res
@@ -45,14 +45,15 @@ export const getUserById = async (req, res) => {
 
 export const createUser = async (req, res) => {
   try {
-    const { name, about, avatar } = req.body;
-    const user = await User.create({ name, about, avatar });
-    return res.status(STATUS_OK_CREATED).send({_id: user._id,
+    const { _id, name, about, avatar } = req.body;
+    const user = await User.create({ name, about, avatar, _id });
+    return res.status(STATUS_OK_CREATED).send({
+      _id: user._id,
       name: user.name,
       about: user.about,
-      avatar: user.avatar, });
+      avatar: user.avatar });
   } catch (error) {
-    if (error.name === "ValidationError") {
+    if (error.message === "ValidationError") {
       return res
         .status(INCORRECT_DATA)
         .send({
@@ -105,7 +106,7 @@ export const editAvatarUser = async (req, res) => {
       { avatar },
       { new: "true", runValidators: true },
     ).orFail(() => new Error("NotFoundError"));
-    return res.status(STATUS_OK).send(user);
+    return res.status(STATUS_OK).send({ avatar: user.avatar });
   } catch (error) {
     if (error.name === "ValidationError") {
       return res
