@@ -28,13 +28,13 @@ export const getUserById = async (req, res) => {
   try {
     const { userId } = req.params;
     const user = await User.findById(userId).orFail(
-      () => new Error("NotFoundError"),
+      () => new Error(NOT_FOUND_ERROR),
     );
-    res.status(STATUS_OK).send({ data: user });
+    res.status(STATUS_OK).send({ user });
   } catch (error) {
     if (error.name === "CastError") {
       return res
-        .status(NOT_FOUND_ERROR)
+        .status(INCORRECT_DATA)
         .send({ message: "Передан не валидный ID" });
     }
     return res
