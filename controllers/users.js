@@ -97,7 +97,7 @@ export const editAvatarUser = async (req, res) => {
     const { avatar } = req.body;
     const user = User.findByIdAndUpdate(
       req.user._id,
-      { avatar: req.body.avatar },
+      { avatar },
       { new: "true", runValidators: true },
     ).orFail(() => new Error("NotFoundError"));
     return res.status(STATUS_OK_CREATED).send({avatar: user.avatar});

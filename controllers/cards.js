@@ -36,9 +36,7 @@ export const createCard = async (req, res) => {
   try {
     const owner = req.user._id;
     const { name, link } = req.body;
-    const card = await Card.create({ name, link, owner })
-      .findById(card._id)
-      .populate("owner");
+    const card = await Card.create({ name, link, owner });
     return res.status(STATUS_OK_CREATED).send({
       name: card.name,
       link: card.link,
@@ -48,8 +46,7 @@ export const createCard = async (req, res) => {
       return res
         .status(INCORRECT_DATA)
         .send({
-          message: "Переданны не валидные данные",
-          error: error.message,
+          message: "Переданны не валидные данные"
         });
     }
     return res
