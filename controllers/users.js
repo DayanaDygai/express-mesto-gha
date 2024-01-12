@@ -1,4 +1,4 @@
-import User from "../models/User";
+import User from "../models/User.js";
 
 const INCORRECT_DATA = 400;
 // переданы некорректные данные в методы создания карточки, пользователя, обновления аватара пользователя или профиля;
