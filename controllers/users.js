@@ -1,11 +1,4 @@
 import User from "../models/User.js";
-const {
-  HTTP_STATUS_OK,
-  HTTP_STATUS_CREATED,
-  HTTP_STATUS_BAD_REQUEST,
-  HTTP_STATUS_NOT_FOUND,
-  HTTP_STATUS_INTERNAL_SERVER_ERROR,
-} = require("http2").constants;
 
 const INCORRECT_DATA = 400;
 // переданы некорректные данные в методы создания карточки, пользователя, обновления аватара пользователя или профиля;
@@ -36,17 +29,17 @@ export const getUserById = (req, res) => {
     .then((user) => {
       if (!user) {
         res
-          .status(HTTP_STATUS_NOT_FOUND)
+          .status(NOT_FOUND_ERROR)
           .send({ message: "Пользователь с таким ID не найден" });
         return;
       }
-      res.status(HTTP_STATUS_OK).send(user);
+      res.status(STATUS_OK).send(user);
     })
     .catch((error) =>
       error.name === "CastError"
-        ? res.status(HTTP_STATUS_BAD_REQUEST).send({ message: error.mssage })
+        ? res.status(NOT_FOUND_ERROR).send({ message: error.mssage })
         : res
-            .status(HTTP_STATUS_INTERNAL_SERVER_ERROR)
+            .status(SERVER_ERROR)
             .send({ message: `Ошибка сервера: ${error}` })
     );
 };
