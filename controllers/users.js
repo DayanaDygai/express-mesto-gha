@@ -47,11 +47,7 @@ export const createUser = async (req, res) => {
   try {
     const { _id, name, about, avatar } = req.body;
     const user = await User.create({ name, about, avatar, _id });
-    return res.status(STATUS_OK_CREATED).send({
-      _id: user._id,
-      name: user.name,
-      about: user.about,
-      avatar: user.avatar });
+    return res.status(STATUS_OK_CREATED).send(user);
   } catch (error) {
     if (error.message === "ValidationError") {
       return res

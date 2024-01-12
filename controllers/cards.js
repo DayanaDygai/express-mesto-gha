@@ -49,7 +49,7 @@ export const deleteCardById = async (req, res) => {
   try {
     const card = await Card.findOne({ _id: req.params.cardId });
     if (!card) {
-      return res.status(NOT_FOUND_ERROR.send('Карточка с указанным _id не найдена.'));
+      return res.status(NOT_FOUND_ERROR).send('Карточка с указанным _id не найдена.');
     }
     const deletedCard = await Card.findOneAndDelete({ _id: req.params.cardId }).orFail(
       () => new Error('NotFoundError'),
