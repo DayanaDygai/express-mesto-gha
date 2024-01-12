@@ -18,10 +18,6 @@ const userSchema = new Schema(
     avatar: {
       type: String,
       required: true,
-      validate: {
-        validator: (url) => IS_URL.test(url),
-        message: 'Некорректный URL',
-      },
     },
   },
   {versionKey: false,},

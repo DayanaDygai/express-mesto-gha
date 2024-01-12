@@ -11,10 +11,6 @@ const cardSchema = new Schema(
     },
     link: {
       type: String,
-      validate: {
-        validator: (v) => IS_URL.test(v),
-        message: 'Некорректный URL',
-      },
       required: true,
     },
     owner: {
