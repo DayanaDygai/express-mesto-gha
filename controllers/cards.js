@@ -1,4 +1,4 @@
-import Card from "../models/Card";
+import Card from "../models/Card.js";
 
 const INCORRECT_DATA = 400;
 // переданы некорректные данные в методы создания карточки, пользователя, обновления аватара пользователя или профиля;
