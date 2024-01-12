@@ -95,7 +95,7 @@ export const editAvatarUser = async (req, res) => {
       { avatar },
       { new: "true", runValidators: true },
     ).orFail(() => new Error("NotFoundError"));
-    return res.status(STATUS_OK_CREATED).send({avatar: user.avatar});
+    return res.status(STATUS_OK).send({avatar: user.avatar});
   } catch (error) {
     if (error.name === "ValidationError") {
       return res
