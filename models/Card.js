@@ -1,5 +1,5 @@
 import mongoose,  { Schema }  from "mongoose";
-const { ObjectId } = mongoose.Schema.Types;
+
 
 const cardSchema = new Schema(
   {
@@ -14,13 +14,12 @@ const cardSchema = new Schema(
       required: true,
     },
     owner: {
-      type: ObjectId,
+      type:  mongoose.Schema.Types.ObjectId,
       ref: "user",
       required: true,
     },
     likes: [{
-      type: ObjectId,
-      default: [],
+      type: [{ type: mongoose.Schema.Types.ObjectId, default: [], ref: "user" }],
     }],
     createdAt: {
       type: Date,

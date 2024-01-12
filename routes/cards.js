@@ -11,12 +11,12 @@ const cardRouter = Router();
 
 cardRouter.get("/", getCards);
 
-cardRouter.delete("/:CardId", deleteCardById);
+cardRouter.delete("/:cardId", deleteCardById);
 
 cardRouter.post("/", createCard);
 
-cardRouter.put("/:CardId/likes", likeCard);
+cardRouter.put("/:cardId/likes", likeCard);
 
-cardRouter.delete("/:CardId/likes", deleteLikeCard);
+cardRouter.delete("/:cardId/likes", deleteLikeCard);
 
 export default cardRouter;
