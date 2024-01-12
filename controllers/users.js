@@ -1,4 +1,11 @@
 import User from "../models/User.js";
+const {
+  HTTP_STATUS_OK,
+  HTTP_STATUS_CREATED,
+  HTTP_STATUS_BAD_REQUEST,
+  HTTP_STATUS_NOT_FOUND,
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
+} = require("http2").constants;
 
 const INCORRECT_DATA = 400;
 // переданы некорректные данные в методы создания карточки, пользователя, обновления аватара пользователя или профиля;
@@ -24,24 +31,27 @@ export const getUsers = async (req, res) => {
   }
 };
 
-export const getUserById = async (req, res) => {
-  try {
-    const { userId } = req.params.userId;
-    const user = await User.findById(userId).orFail(
-      () => new Error("NotFoundError"),
+export const getUserById = (req, res) => {
+  User.findById(req.params.userId)
+    .then((user) => {
+      if (!user) {
+        res
+          .status(HTTP_STATUS_NOT_FOUND)
+          .send({ message: "Пользователь с таким ID не найден" });
+        return;
+      }
+      res.status(HTTP_STATUS_OK).send(user);
+    })
+    .catch((error) =>
+      error.name === "CastError"
+        ? res.status(HTTP_STATUS_BAD_REQUEST).send({ message: error.mssage })
+        : res
+            .status(HTTP_STATUS_INTERNAL_SERVER_ERROR)
+            .send({ message: `Ошибка сервера: ${error}` })
     );
-    res.status(STATUS_OK).send({ user });
-  } catch (error) {
-    if (error.name === "CastError") {
-      return res
-        .status(NOT_FOUND_ERROR)
-        .send({ message: "Передан не валидный ID" });
-    }
-    return res
-      .status(SERVER_ERROR)
-      .send({ message: "Ошибка на стороне сервера" });
-  }
 };
+
+
 
 export const createUser = async (req, res) => {
   try {
