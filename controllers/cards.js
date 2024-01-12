@@ -66,13 +66,10 @@ export const deleteCardById = async (req, res) => {
 
 export const likeCard = async (req, res) => {
   try {
-    const owner = req.user._id;
-    const { CardId } = req.params;
     const card = await Card.findByIdAndUpdate(
-      CardId,
-      { $addToSet: { likes: owner } },
-      { new: true },
-    ).orFail(() => new Error(NOT_FOUND_ERROR));
+      req.params.cardId,
+      { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
+      { new: true }).orFail(() => new Error(NOT_FOUND_ERROR));
 
     return res.status(STATUS_OK).send({card});
   } catch (error) {
@@ -87,11 +84,9 @@ export const likeCard = async (req, res) => {
 
 export const deleteLikeCard = async (req, res) => {
   try {
-    const owner = req.user._id;
-    const { CardId } = req.params;
     const card = await Card.findByIdAndUpdate(
-      CardId,
-      { $pull: { likes: owner } },
+      req.params.cardId,
+      { $pull: { likes: req.user._id } },
       { new: true },
     ).orFail(() => new Error("NotFoundError"));
     return res.status(STATUS_OK).send({ card });
