@@ -52,13 +52,18 @@ export const createCard = async (req, res) => {
 
 export const deleteCardById = async (req, res) => {
   try {
-    const deletedCard = await Card.deleteOne({ _id: req.params.cardId })
+    const { CardId } = req.params;
+    const owner = req.user._id;
+    const card = await Card.findById(CardId).orFail(
+      () => new Error('NotFoundError'));
     if (!deletedCard) {
       return res.status(INCORRECT_DATA).send({message: "Карточка с ID не найдена"})
     }
-    await Card.findOneAndDelete({ _id: req.params.cardId }).orFail(
-      () => new Error('NotFoundError'),
-    )
+    if (card.owner.toString() !== owner) {
+      return res.status(INCORRECT_DATA).send({message: "Нет прав для удаления карточки"})
+    }
+    await Card.findOneAndDelete({ _id: req.params.cardId })
+    const deletedCard = await Card.deleteOne(CardId);
     return res.status(STATUS_OK).send({message: "Карточка удалена" });
   } catch (error) {
     if (error.message === 'NotFoundError') {
