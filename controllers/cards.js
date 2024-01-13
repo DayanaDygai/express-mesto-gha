@@ -82,11 +82,11 @@ export const likeCard = async (req, res) => {
   } catch (error) {
     if (error.message === 'NotFoundError') {
       return res
-        .status(INCORRECT_DATA)
+        .status(NOT_FOUND_ERROR)
         .send({ message: "Пользователь по указанному ID не найден" });;
     }
     if (error.name === "CastError") {
-      return res.status(NOT_FOUND_ERROR).send({ message: error.message });
+      return res.status(INCORRECT_DATA).send({ message: "Передан некорректный ID" });
     }
     return res
       .status(SERVER_ERROR)
