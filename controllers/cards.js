@@ -57,13 +57,18 @@ export const createCard = async (req, res) => {
 
 export const deleteCardById = async (req, res) => {
   try {
-    const { CardId } = req.params;
-    const deletedCard = await Card.deleteOne(CardId).orFail(
-      () => new Error("NotFoundError"));
-    return res.status(OK).send({ deletedCard });
+
+    const deletedCard = await Card.deleteOne({ _id: req.params.cardId })
+    if (!deletedCard) {
+      return res.status(NOT_FOUND_ERROR).send({message: "Карточка с ID не найдена"})
+    }
+    await Card.findOneAndDelete({ _id: req.params.cardId }).orFail(
+      () => new Error('NotFoundError'),
+    );
+    return res.status(STATUS_OK).send({message: "Карточка удалена" });
   } catch (error) {
-    if (error.name === "CastError") {
-      return res.status(INCORRECT_DATA).send({ message: error.message });
+    if (error.message === 'NotFoundError') {
+      return res.status(INCORRECT_DATA).send({message: "Карточка с ID не найдена"});
     }
     return res
       .status(SERVER_ERROR)
