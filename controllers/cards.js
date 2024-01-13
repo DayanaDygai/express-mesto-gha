@@ -52,16 +52,17 @@ export const createCard = async (req, res) => {
 
 export const deleteCardById = async (req, res) => {
   try {
-
-    const card = await Card.findOne({ _id: req.params })
+    const { CardId } = req.params;
+    const owner = req.user._id;
+    const card = await Card.findById(CardId).orFail(
+      () => new Error('NotFoundError'));
     if (card.owner.toString() !== owner) {
       return res.status(INCORRECT_DATA).send({message: "Нет прав для удаления карточки"})
     }
     if(!card) {
       return res.status(NOT_FOUND_ERROR).send({message: "Карточки с указанным ID не существует"})
     }
-    const deletedCard = await Card.findOneAndDelete({ _id: req.params }).orFail(
-      () => new Error('NotFoundError'));
+    const deletedCard = await Card.deleteOne(CardId);
     return res.status(STATUS_OK).send({deletedCard});
   } catch (error) {
     if (error.message === 'NotFoundError') {
@@ -81,7 +82,7 @@ export const likeCard = async (req, res) => {
       { $addToSet: { likes: req.user._id } },
       { new: true },
     ).orFail(() => new Error("NotFoundError"));
-    return res.status(STATUS_OK).send({card});
+    return res.status(STATUS_OK).send(card);
   } catch (error) {
 
       if (error.message === 'NotFoundError') {
