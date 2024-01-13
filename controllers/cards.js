@@ -59,7 +59,7 @@ export const deleteCardById = async (req, res) => {
   try {
     const { CardId } = req.params;
     const deletedCard = await Card.deleteOne(CardId).orFail(
-      () => new Error(NOT_FOUND_ERROR));
+      () => new Error("NotFoundError"));
     return res.status(OK).send({ deletedCard });
   } catch (error) {
     if (error.name === "CastError") {
@@ -73,15 +73,20 @@ export const deleteCardById = async (req, res) => {
 
 export const likeCard = async (req, res) => {
   try {
-    const owner = req.user._id;
-    const { CardId } = req.params;
+    // const owner = req.user._id;
+    // const { CardId } = req.params.cardId;
     const card = await Card.findByIdAndUpdate(
-      CardId,
-      { $addToSet: { likes: owner } },
+      req.params.cardId,
+      { $addToSet: { likes:req.user._id } },
       { new: true },
-    ).orFail(() => new Error(NOT_FOUND_ERROR));
-    return res.status(STATUS_OK).send({ card });
+    ).orFail(() => new Error("NotFoundError"));
+    return res.status(STATUS_OK).send(card);
   } catch (error) {
+    if (error.message === 'NotFoundError') {
+      return res
+        .status(NOT_FOUND_ERROR)
+        .send({ message: "Пользователь по указанному ID не найден" });;
+    }
     if (error.name === "CastError") {
       return res.status(INCORRECT_DATA).send({ message: error.message });
     }

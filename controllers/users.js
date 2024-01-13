@@ -26,8 +26,8 @@ export const getUsers = async (req, res) => {
 
 export const getUserById = async (req, res) => {
   try {
-    // const { userId } = req.params._id;
-    const user = await User.findById(req.params).orFail(
+    const { userId } = req.params;
+    const user = await User.findById(userId).orFail(
       () => new Error("NotFoundError"),
     )
     return res.status(STATUS_OK).send(user);
@@ -40,7 +40,7 @@ export const getUserById = async (req, res) => {
 
     if (error.name === "CastError") {
       return res
-        .status(NOT_FOUND_ERROR)
+        .status(INCORRECT_DATA)
         .send({ message: "Передан не валидный ID" });
     }
 
