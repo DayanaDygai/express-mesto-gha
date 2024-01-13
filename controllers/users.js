@@ -30,7 +30,7 @@ export const getUserById = async (req, res) => {
     const user = await User.findById(req.params.userId).orFail(
       () => new Error("NotFoundError"),
     );
-    res.status(STATUS_OK).send(user);
+   return res.status(STATUS_OK).send(user);
   } catch (error) {
     if (error.name === "CastError") {
       return res
@@ -39,7 +39,7 @@ export const getUserById = async (req, res) => {
     }
     if (error.message === 'NotFoundError') {
       return res
-        .status(INCORRECT_DATA)
+        .status(NOT_FOUND_ERROR)
         .send({ message: "Пользователь по указанному ID не найден" });
     }
     return res
