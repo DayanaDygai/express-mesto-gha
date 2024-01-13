@@ -59,12 +59,13 @@ export const deleteCardById = async (req, res) => {
     if (card.owner.toString() !== owner) {
       return res.status(INCORRECT_DATA).send({message: "Нет прав для удаления карточки"})
     }
+
     await Card.findOneAndDelete({ _id: req.params.cardId })
     const deletedCard = await Card.deleteOne(CardId);
     return res.status(STATUS_OK).send({deletedCard});
   } catch (error) {
     if (error.message === 'NotFoundError') {
-      return res.status(NOT_FOUND_ERROR).send({message: "Карточка с ID не найдена"});
+      return res.status(INCORRECT_DATA).send({message: "Указан не корректный ID"});
     }
     return res
       .status(SERVER_ERROR)
