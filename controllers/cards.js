@@ -34,13 +34,8 @@ export const getCards = async (req, res) => {
 
 export const createCard = async (req, res) => {
   try {
-    const owner = req.user._id;
-    const { name, link } = req.body;
-    const card = await Card.create({ name, link, owner });
-    return res.status(STATUS_OK_CREATED).send({
-      name: card.name,
-      link: card.link,
-      owner: card.owner,});
+    const card = await Card.create({ ...req.body, owner: req.user._id });
+    return res.status(STATUS_OK_CREATED).send(card);
   } catch (error) {
     if (error.name === "ValidationError") {
       return res

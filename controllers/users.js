@@ -96,14 +96,19 @@ export const editInfoUser = async (req, res) => {
 
 export const editAvatarUser = async (req, res) => {
   try {
-    const { avatar } = req.body;
+
     const user = await User.findByIdAndUpdate(
       req.user._id,
-      { avatar },
+      {avatar: req.body.avatar },
       { new: "true", runValidators: true },
     ).orFail(() => new Error("NotFoundError"));
-    return res.status(STATUS_OKD).send({avatar: user.avatar});
+    return res.status(STATUS_OK).send({avatar: user.avatar});
   } catch (error) {
+    if (error.message === 'NotFoundError') {
+      return res
+        .status(NOT_FOUND_ERROR)
+        .send({ message: "Пользователь по указанному ID не найден" });
+    }
     if (error.name === "ValidationError") {
       return res
         .status(INCORRECT_DATA)
