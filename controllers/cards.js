@@ -56,15 +56,12 @@ export const deleteCardById = async (req, res) => {
     const owner = req.user._id;
     const card = await Card.findById(CardId).orFail(
       () => new Error('NotFoundError'));
-    if (!deletedCard) {
-      return res.status(INCORRECT_DATA).send({message: "Карточка с ID не найдена"})
-    }
     if (card.owner.toString() !== owner) {
       return res.status(INCORRECT_DATA).send({message: "Нет прав для удаления карточки"})
     }
     await Card.findOneAndDelete({ _id: req.params.cardId })
     const deletedCard = await Card.deleteOne(CardId);
-    return res.status(STATUS_OK).send({message: "Карточка удалена" });
+    return res.status(STATUS_OK).send({deletedCard});
   } catch (error) {
     if (error.message === 'NotFoundError') {
       return res.status(NOT_FOUND_ERROR).send({message: "Карточка с ID не найдена"});
@@ -77,27 +74,28 @@ export const deleteCardById = async (req, res) => {
 
 export const likeCard = async (req, res) => {
   try {
+    const owner = req.user._id;
     const { CardId } = req.params;
-    const likes = await Card.findByIdAndUpdate(
+    const card = await Card.findByIdAndUpdate(
       CardId,
-      { $addToSet: { likes:req.user._id } },
+      { $addToSet: { likes: owner } },
       { new: true },
-    ).orFail(() => new Error("NotFoundError"));
-    return res.status(STATUS_OK).send(likes);
+    )
+      .orFail(() => new Error("NotFoundError"));
+    return res.status(STATUS_OK).send({ card });
   } catch (error) {
-    if (error.message === 'NotFoundError') {
+      if (error.message === 'NotFoundError') {
+        return res
+          .status(NOT_FOUND_ERROR)
+          .send({ message: "Пользователь по указанному ID не найден" });;
+      }
+      if (error.name === "CastError") {
+        return res.status(INCORRECT_DATA).send({ message: "Передан некорректный ID" });
+      }
       return res
-        .status(NOT_FOUND_ERROR)
-        .send({ message: "Пользователь по указанному ID не найден" });;
+        .status(SERVER_ERROR)
+        .send({ message: "ошибка на стороне сервера" });}
     }
-    if (error.name === "CastError") {
-      return res.status(INCORRECT_DATA).send({ message: "Передан некорректный ID" });
-    }
-    return res
-      .status(SERVER_ERROR)
-      .send({ message: "ошибка на стороне сервера" });
-  }
-};
 
 export const deleteLikeCard = async (req, res) => {
   try {
