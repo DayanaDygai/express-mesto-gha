@@ -3,6 +3,8 @@ import "dotenv/config";
 import router from "./routes/index.js";
 import mongoose from "mongoose";
 
+const NOT_FOUND_ERROR = 404;
+
 const { PORT, MONGO_URL } = process.env;
 const app = express();
 
@@ -19,6 +21,10 @@ app.use((req, res, next) => {
 });
 
 app.use(router);
+
+app.use("*", (req, res) =>
+  res.status(NOT_FOUND_ERRO).send({ message: "Страницы не существует" })
+);
 
 app.listen(3000, () => {
   console.log(`Server listen port ${PORT}`);
