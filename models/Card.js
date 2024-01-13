@@ -17,14 +17,19 @@ const cardSchema = new Schema(
       ref: "user",
       required: true,
     },
-    likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "user" }],
-    default: [],
+    likes: {
+      type: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+      }],
+      default: [],
+    },
     createdAt: {
       type: Date,
       default: Date.now,
     },
   },
-  {},
+  {versionKey: false,},
 );
 
 export default mongoose.model("card", cardSchema);

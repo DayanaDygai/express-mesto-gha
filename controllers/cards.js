@@ -78,7 +78,7 @@ export const likeCard = async (req, res) => {
       { $addToSet: { likes:req.user._id } },
       { new: true },
     ).orFail(() => new Error("NotFoundError"));
-    return res.status(STATUS_OK).send({likes});
+    return res.status(STATUS_OK).send(likes);
   } catch (error) {
     if (error.message === 'NotFoundError') {
       return res
@@ -96,15 +96,18 @@ export const likeCard = async (req, res) => {
 
 export const deleteLikeCard = async (req, res) => {
   try {
-    const owner = req.user._id;
-    const { CardId } = req.params;
-    const card = await Card.findByIdAndUpdate(
-      CardId,
+    const likes = await Card.findByIdAndUpdate(
+      req.params.cardId,
       { $pull: { likes: owner } },
       { new: true },
     ).orFail(() => new Error(NOT_FOUND_ERROR));
-    return res.status(STATUS_OK).send({ card });
+    return res.status(STATUS_OK).send(likes);
   } catch (error) {
+    if (error.message === 'NotFoundError') {
+      return res
+        .status(NOT_FOUND_ERROR)
+        .send({ message: "Пользователь по указанному ID не найден" });;
+    }
     if (error.name === "CastError") {
       return res.status(INCORRECT_DATA).send({ message: error.message });
     }
