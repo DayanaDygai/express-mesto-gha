@@ -30,12 +30,17 @@ export const getUserById = async (req, res) => {
     const user = await User.findById(userId).orFail(
       () => new Error("NotFoundError"),
     );
-    res.status(STATUS_OK).send({ data: user });
+    res.status(STATUS_OK).send(user);
   } catch (error) {
     if (error.name === "CastError") {
       return res
         .status(NOT_FOUND_ERROR)
         .send({ message: "Передан не валидный ID" });
+    }
+    if (error.message === 'NotFoundError') {
+      return res
+        .status(NOT_FOUND_ERROR)
+        .send({ message: "Пользователь по указанному ID не найден" });
     }
     return res
       .status(SERVER_ERROR)
@@ -95,7 +100,7 @@ export const editAvatarUser = async (req, res) => {
       { avatar },
       { new: "true", runValidators: true },
     ).orFail(() => new Error("NotFoundError"));
-    return res.status(STATUS_OK_CREATED).send({avatar: user.avatar});
+    return res.status(STATUS_OKD).send({avatar: user.avatar});
   } catch (error) {
     if (error.name === "ValidationError") {
       return res
