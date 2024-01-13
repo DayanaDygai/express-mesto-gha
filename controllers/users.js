@@ -24,27 +24,22 @@ export const getUsers = async (req, res) => {
   }
 };
 
-export const getUserById = async (req, res) => {
+export const getUserById = async (req, res, next) => {
   try {
-    const { userId } = req.params._id;
+    const { userId } = req.params;
     const user = await User.findById(userId).orFail(
-      () => new Error("NotFoundError"),
+      () => new Error('NotFoundError'),
     );
-    res.status(STATUS_OK).send({user});
+
+    return res.status(STATUS_OK).send(user);
   } catch (error) {
-    if (error.name === "CastError") {
-      return res
-        .status(INCORRECT_DATA)
-        .send({ message: "Передан не валидный ID" });
-    }
     if (error.message === 'NotFoundError') {
-      return res
-        .status(INCORRECT_DATA)
-        .send({ message: "Пользователь по указанному ID не найден" });
+      return next(new NotFoundError('Пользователь по указанному ID не найден.'));
     }
-    return res
-      .status(SERVER_ERROR)
-      .send({ message: "Ошибка на стороне сервера" });
+    if (error instanceof MongooseError.CastError) {
+      return next(new BadRequestError('Передан не валидный ID.'));
+    }
+    return next(error);
   }
 };
 
