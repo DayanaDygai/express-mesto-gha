@@ -59,8 +59,9 @@ export const deleteCardById = async (req, res) => {
     if (card.owner.toString() !== owner) {
       return res.status(INCORRECT_DATA).send({message: "Нет прав для удаления карточки"})
     }
-
-    await Card.findOneAndDelete({ _id: req.params.cardId })
+    if(!card) {
+      return res.status(NOT_FOUND_ERROR).send({message: "Карточки с указанным ID не существует"})
+    }
     const deletedCard = await Card.deleteOne(CardId);
     return res.status(STATUS_OK).send({deletedCard});
   } catch (error) {
