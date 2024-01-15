@@ -1,6 +1,7 @@
-import Card from "../models/Card.js";
+import Card from '../models/Card.js';
 
 const INCORRECT_DATA = 400;
+// eslint-disable-next-line max-len
 // переданы некорректные данные в методы создания карточки, пользователя, обновления аватара пользователя или профиля;
 const NOT_FOUND_ERROR = 404;
 // карточка или пользователь не найден
