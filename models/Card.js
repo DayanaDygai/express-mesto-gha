@@ -1,4 +1,4 @@
-import mongoose,  { Schema }  from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const cardSchema = new Schema(
   {
@@ -18,10 +18,12 @@ const cardSchema = new Schema(
       required: true,
     },
     likes: {
-      type: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'user',
-      }],
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "user",
+        },
+      ],
       default: [],
     },
     createdAt: {
@@ -29,7 +31,7 @@ const cardSchema = new Schema(
       default: Date.now,
     },
   },
-  {versionKey: false,},
+  { versionKey: false },
 );
 
 export default mongoose.model("card", cardSchema);

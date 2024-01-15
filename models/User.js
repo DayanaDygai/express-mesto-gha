@@ -1,5 +1,4 @@
-import mongoose, { Schema }  from "mongoose";
-
+import mongoose, { Schema } from "mongoose";
 
 const userSchema = new Schema(
   {
@@ -20,7 +19,7 @@ const userSchema = new Schema(
       required: true,
     },
   },
-  {versionKey: false,},
+  { versionKey: false },
 );
 
 export default mongoose.model("user", userSchema);

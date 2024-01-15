@@ -23,7 +23,7 @@ app.use((req, res, next) => {
 app.use(router);
 
 app.use("*", (req, res) =>
-  res.status(NOT_FOUND_ERROR).send({ message: "Страницы не существует" })
+  res.status(NOT_FOUND_ERROR).send({ message: "Страницы не существует" }),
 );
 
 app.listen(3000, () => {

@@ -29,10 +29,10 @@ export const getUserById = async (req, res) => {
     const { userId } = req.params;
     const user = await User.findById(userId).orFail(
       () => new Error("NotFoundError"),
-    )
-    return res.status(STATUS_OK).send({data:user});
+    );
+    return res.status(STATUS_OK).send({ data: user });
   } catch (error) {
-    if (error.message === 'NotFoundError') {
+    if (error.message === "NotFoundError") {
       return res
         .status(NOT_FOUND_ERROR)
         .send({ message: "Пользователь по указанному ID не найден" });
@@ -56,12 +56,10 @@ export const createUser = async (req, res) => {
     return res.status(STATUS_OK_CREATED).send(newUser);
   } catch (error) {
     if (error.name === "ValidationError") {
-      return res
-        .status(INCORRECT_DATA)
-        .send({
-          message: "Переданны не валидные данные",
-          error: error.message,
-        });
+      return res.status(INCORRECT_DATA).send({
+        message: "Переданны не валидные данные",
+        error: error.message,
+      });
     }
     return res
       .status(SERVER_ERROR)
@@ -77,24 +75,19 @@ export const editInfoUser = async (req, res) => {
       { name, about },
       { new: true, runValidators: true },
     ).orFail(() => new Error("NotFoundError"));
-    return res.status(STATUS_OK).send({name: user.name,
-      about: user.about,});
+    return res.status(STATUS_OK).send({ name: user.name, about: user.about });
   } catch (error) {
-    if (error.message === 'NotFoundError') {
-      return res
-        .status(NOT_FOUND_ERROR)
-        .send({
-          message: "Переданны не валидные данные",
-          error: error.message,
-        });
-     }
+    if (error.message === "NotFoundError") {
+      return res.status(NOT_FOUND_ERROR).send({
+        message: "Переданны не валидные данные",
+        error: error.message,
+      });
+    }
     if (error.name === "ValidationError") {
-      return res
-        .status(INCORRECT_DATA)
-        .send({
-          message: "Переданны не валидные данные",
-          error: error.message,
-        });
+      return res.status(INCORRECT_DATA).send({
+        message: "Переданны не валидные данные",
+        error: error.message,
+      });
     }
     return res
       .status(SERVER_ERROR)
@@ -104,26 +97,23 @@ export const editInfoUser = async (req, res) => {
 
 export const editAvatarUser = async (req, res) => {
   try {
-
     const user = await User.findByIdAndUpdate(
       req.user._id,
-      {avatar: req.body.avatar },
+      { avatar: req.body.avatar },
       { new: "true", runValidators: true },
     ).orFail(() => new Error("NotFoundError"));
-    return res.status(STATUS_OK).send({avatar: user.avatar});
+    return res.status(STATUS_OK).send({ avatar: user.avatar });
   } catch (error) {
-    if (error.message === 'NotFoundError') {
+    if (error.message === "NotFoundError") {
       return res
         .status(NOT_FOUND_ERROR)
         .send({ message: "Пользователь по указанному ID не найден" });
     }
     if (error.name === "ValidationError") {
-      return res
-        .status(INCORRECT_DATA)
-        .send({
-          message: "Переданны не валидные данные",
-          error: error.message,
-        });
+      return res.status(INCORRECT_DATA).send({
+        message: "Переданны не валидные данные",
+        error: error.message,
+      });
     }
     return res
       .status(SERVER_ERROR)
