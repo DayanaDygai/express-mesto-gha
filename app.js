@@ -1,5 +1,4 @@
 import express from "express";
-import "dotenv/config";
 import router from "./routes/index.js";
 import mongoose from "mongoose";
 
@@ -27,5 +26,5 @@ app.use("*", (req, res) =>
 );
 
 app.listen(3000, () => {
-  console.log(`Server listen port ${PORT}`);
+  console.log(`Server listen port 3000`);
 });
