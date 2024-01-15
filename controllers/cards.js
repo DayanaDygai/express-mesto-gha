@@ -103,9 +103,9 @@ export const deleteLikeCard = async (req, res) => {
     if (error.message === 'NotFoundError') {
       return res
         .status(NOT_FOUND_ERROR)
-        .send({ message: "Пользователь по указанному ID не найден" });;
+        .send({ message: 'Пользователь по указанному ID не найден' });;
     }
-    if (error.name === "CastError") {
+    if (error.name === 'CastError') {
       return res.status(INCORRECT_DATA).send({ message: "Передан некорректный ID" });
     }
     return res
