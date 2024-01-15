@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node app.js",
     "dev": " nodemon --experimental-modules --es-module-specifier-resolution=node --inspect -- app.js",
-    "lint": "npx eslint"
+    "lint": "npx eslint ."
   },
   "keywords": [],
   "author": "Dayana",

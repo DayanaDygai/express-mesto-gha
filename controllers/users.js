@@ -80,6 +80,14 @@ export const editInfoUser = async (req, res) => {
     return res.status(STATUS_OK).send({name: user.name,
       about: user.about,});
   } catch (error) {
+    if (error.message === 'NotFoundError') {
+      return res
+        .status(NOT_FOUND_ERROR)
+        .send({
+          message: "Переданны не валидные данные",
+          error: error.message,
+        });
+     }
     if (error.name === "ValidationError") {
       return res
         .status(INCORRECT_DATA)
