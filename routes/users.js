@@ -5,7 +5,8 @@ import {
   getUsers,
   editInfoUser,
   editAvatarUser,
-} from '../controllers/users';
+// eslint-disable-next-line import/extensions
+} from '../controllers/users.js';
 
 const userRouter = Router();
 

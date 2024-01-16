@@ -1,6 +1,8 @@
 import { Router } from 'express';
-import userRouter from './users';
-import cardRouter from './cards';
+// eslint-disable-next-line import/extensions
+import userRouter from './users.js';
+// eslint-disable-next-line import/extensions
+import cardRouter from './cards.js';
 
 const router = Router();
 

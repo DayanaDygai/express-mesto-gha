@@ -5,7 +5,8 @@ import {
   createCard,
   likeCard,
   deleteLikeCard,
-} from '../controllers/cards';
+// eslint-disable-next-line import/extensions
+} from '../controllers/cards.js';
 
 const cardRouter = Router();
 

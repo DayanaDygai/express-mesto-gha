@@ -1,4 +1,5 @@
-import Card from '../models/Card';
+// eslint-disable-next-line import/extensions
+import Card from '../models/Card.js';
 
 const INCORRECT_DATA = 400;
 // eslint-disable-next-line max-len
