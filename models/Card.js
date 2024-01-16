@@ -1,12 +1,13 @@
-import mongoose, { Schema } from "mongoose";
+/* eslint-disable max-len */
+import mongoose, { Schema } from 'mongoose';
 
 const cardSchema = new Schema(
   {
     name: {
       type: String,
       required: true,
-      minlength: [2, "минимальная длинна 2 символа"],
-      maxlength: [30, "максимальная длинна 30 символов"],
+      minlength: [2, 'минимальная длинна 2 символа'],
+      maxlength: [30, 'максимальная длинна 30 символов'],
     },
     link: {
       type: String,
@@ -14,14 +15,14 @@ const cardSchema = new Schema(
     },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "user",
+      ref: 'user',
       required: true,
     },
     likes: {
       type: [
         {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "user",
+          ref: 'user',
         },
       ],
       default: [],
@@ -34,7 +35,7 @@ const cardSchema = new Schema(
   { versionKey: false },
 );
 
-export default mongoose.model("card", cardSchema);
+export default mongoose.model('card', cardSchema);
 
 // name — имя пользователя, строка от 2 до 30 символов, обязательное поле;
 // about — информация о пользователе, строка от 2 до 30 символов, обязательное поле;
