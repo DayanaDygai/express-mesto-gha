@@ -1,7 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 // eslint-disable-next-line import/extensions
-import router from './routes/index';
+import router from './routes/index.js';
 
 const NOT_FOUND_ERROR = 404;
 
