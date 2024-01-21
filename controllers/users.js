@@ -149,7 +149,7 @@ export const getMyProfile = async (req, res, next) => {
     if (!user) {
       throw new NotFoundError('Пользователь не найден');
     }
-    return res.status(STATUS_OK).send(user);
+    return res.status(STATUS_OK).send({ data: user });
   } catch (error) {
     return next(error);
   }
