@@ -2,7 +2,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { celebrate, Joi } from 'celebrate';
+import { celebrate, Joi, errors } from 'celebrate';
 
 import dotenv from 'dotenv';
 
@@ -49,6 +49,7 @@ app.use(auth);
 app.use(router);
 
 app.use('*', (req, res) => res.status(NOT_FOUND_ERROR).send({ message: 'Страницы не существует' }));
+app.use(errors());
 app.use(handlerError);
 
 app.listen(3000);
