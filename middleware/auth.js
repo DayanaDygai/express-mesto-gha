@@ -2,7 +2,8 @@
 // eslint-disable-next-line import/no-unresolved, import/no-extraneous-dependencies
 import jwt from 'jsonwebtoken';
 
-import NotAuthenticateError from '../errors/NotAuthenticateError';
+// eslint-disable-next-line import/extensions
+import NotAuthenticateError from '../errors/NotAuthenticateError.js';
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 // eslint-disable-next-line func-names
