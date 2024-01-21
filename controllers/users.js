@@ -77,23 +77,21 @@ export const getUserById = async (req, res, next) => {
 
 export const createUser = async (req, res, next) => {
   try {
-    const {
-      email, password, name, about, avatar,
-    } = req.body;
-    if (!password) {
-      throw new IncorrectDataError('Поле Password не заполнено');
-    }
-    const hash = await bcrypt.hash(password, SOLT_ROUND);
+    // const {
+    //   email, password, name, about, avatar,
+    // } = req.body;
+    // if (!password) {
+    //   throw new IncorrectDataError('Поле Password не заполнено');
+    // }
+    const hash = await bcrypt.hash(req.body.password, SOLT_ROUND);
     const newUser = await User.create({
-      email, password: hash, name, about, avatar,
+      email: req.body.email,
+      password: hash,
+      name: req.body.name,
+      about: req.body.about,
+      avatar: req.body.avatar,
     });
-    return res.status(STATUS_OK_CREATED).send({
-      _id: newUser._id,
-      name: newUser.name,
-      about: newUser.about,
-      avatar: newUser.avatar,
-      email: newUser.email,
-    });
+    return res.status(STATUS_OK_CREATED).send(newUser);
   } catch (error) {
     if (error.code === MONGO_DUPLICATE_ERROR_CODE) {
       throw new ConflictError('Такой пользователь уже существует');
