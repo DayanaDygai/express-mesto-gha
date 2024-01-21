@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 import mongoose, { Schema } from 'mongoose';
+// eslint-disable-next-line no-unused-vars
 import validator from 'validator';
 
 const cardSchema = new Schema(
