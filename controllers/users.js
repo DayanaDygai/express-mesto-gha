@@ -33,7 +33,7 @@ export const login = async (req, res, next) => {
     const { email, password } = req.body;
     const user = User.findOne({ email }.select('+password'));
     if (!user) {
-      throw new NotAuthenticateError('Не верные логин или пароль');
+      throw new IncorrectDataError('Не верные логин или пароль');
     }
     const matched = await bcrypt.compare(password, user.password);
     if (!matched) {
