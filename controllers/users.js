@@ -91,13 +91,19 @@ export const createUser = async (req, res, next) => {
       about: req.body.about,
       avatar: req.body.avatar,
     });
-    return res.status(STATUS_OK_CREATED).send(newUser);
+    return res.status(STATUS_OK_CREATED).send({
+      _id: newUser._id,
+      name: newUser.name,
+      about: newUser.about,
+      avatar: newUser.avatar,
+      email: newUser.email,
+    });
   } catch (error) {
     if (error.code === MONGO_DUPLICATE_ERROR_CODE) {
       throw new ConflictError('Такой пользователь уже существует');
     }
     if (error.name === 'ValidationError') {
-      throw new IncorrectDataError('Переданы неккоректные данные');
+      throw new NotAuthenticateError('Переданы неккоректные данные');
     }
     return next(error);
   }
