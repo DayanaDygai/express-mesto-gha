@@ -1,22 +1,27 @@
 /* eslint-disable max-len */
 import mongoose, { Schema } from 'mongoose';
+import validator from 'validator';
 
 const cardSchema = new Schema(
   {
     name: {
       type: String,
-      required: true,
+      required: [true, 'Поле является обязательным'],
       minlength: [2, 'минимальная длинна 2 символа'],
       maxlength: [30, 'максимальная длинна 30 символов'],
     },
     link: {
       type: String,
       required: true,
+      validate: {
+        validator: (value) => validator.isURL(value, { protocols: ['http', 'https'], require_protocol: true }),
+        message: 'Неверный формат ссылки',
+      },
     },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'user',
-      required: true,
+      required: [true, 'Поле является обязательным'],
     },
     likes: {
       type: [

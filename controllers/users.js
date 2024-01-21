@@ -1,13 +1,22 @@
 /* eslint-disable consistent-return */
 /* eslint-disable max-len */
+// eslint-disable-next-line import/extensions, import/no-unresolved, import/no-extraneous-dependencies
+import bcrypt from 'bcrypt';
+
+// eslint-disable-next-line import/extensions
+import ConflictError from '../errors/ConflictError.js';
+// eslint-disable-next-line import/extensions
+import IncorrectDataError from '../errors/IncorrectDataError.js';
+// eslint-disable-next-line import/extensions
+import NotFoundError from '../errors/NotFoundError.js';
+// eslint-disable-next-line import/extensions
+import NotAuthenticateError from '../errors/NotAuthenticateError.js';
+
 // eslint-disable-next-line import/extensions
 import User from '../models/User.js';
+// eslint-disable-next-line import/extensions
+import generateToken from '../utils/jwt.js';
 
-const INCORRECT_DATA = 400;
-// переданы некорректные данные в методы создания карточки, пользователя, обновления аватара пользователя или профиля;
-const NOT_FOUND_ERROR = 404;
-// карточка или пользователь не найден
-const SERVER_ERROR = 500;
 // oшибка по-умолчанию
 
 const STATUS_OK = 200;
@@ -16,18 +25,37 @@ const STATUS_OK = 200;
 const STATUS_OK_CREATED = 201;
 // запрос выполнен и создан новый ресурс
 
-export const getUsers = async (req, res) => {
+const MONGO_DUPLICATE_ERROR_CODE = 11000;
+const SOLT_ROUND = 10;
+
+export const login = async (req, res, next) => {
   try {
-    const users = await User.find({});
-    res.status(STATUS_OK).send(users);
+    const { email, password } = req.body;
+    const user = User.findOne({ email }.select('+password'));
+    if (!user) {
+      throw new NotAuthenticateError('Не верные логин или пароль');
+    }
+    const matched = await bcrypt.compare(password, user.password);
+    if (!matched) {
+      throw new NotAuthenticateError('Не верные логин или пароль');
+    }
+    const token = generateToken({ _id: user._id, email: user.email });
+    return res.status(STATUS_OK).send({ token });
   } catch (error) {
-    return res
-      .status(SERVER_ERROR)
-      .send({ message: 'Ошибка на стороне сервера' });
+    return next(error);
   }
 };
 
-export const getUserById = async (req, res) => {
+export const getUsers = async (req, res, next) => {
+  try {
+    const users = await User.find({});
+    return res.status(STATUS_OK).send(users);
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const getUserById = async (req, res, next) => {
   try {
     const { userId } = req.params;
     const user = await User.findById(userId).orFail(
@@ -36,41 +64,48 @@ export const getUserById = async (req, res) => {
     return res.status(STATUS_OK).send({ data: user });
   } catch (error) {
     if (error.message === 'NotFoundError') {
-      return res
-        .status(NOT_FOUND_ERROR)
-        .send({ message: 'Пользователь по указанному ID не найден' });
+      throw new NotFoundError('Пользователь с данным ID не найден');
     }
 
     if (error.name === 'CastError') {
-      return res
-        .status(INCORRECT_DATA)
-        .send({ message: 'Передан не валидный ID' });
+      throw new IncorrectDataError('Передан некорректный ID');
     }
 
-    return res
-      .status(SERVER_ERROR)
-      .send({ message: 'Ошибка на стороне сервера' });
+    return next(error);
   }
 };
 
-export const createUser = async (req, res) => {
+export const createUser = async (req, res, next) => {
   try {
-    const newUser = await User.create(req.body);
-    return res.status(STATUS_OK_CREATED).send(newUser);
-  } catch (error) {
-    if (error.name === 'ValidationError') {
-      return res.status(INCORRECT_DATA).send({
-        message: 'Переданны не валидные данные',
-        error: error.message,
-      });
+    const {
+      email, password, name, about, avatar,
+    } = req.body;
+    if (!password) {
+      throw new IncorrectDataError('Поле Password не заполнено');
     }
-    return res
-      .status(SERVER_ERROR)
-      .send({ message: 'Ошибка на стороне сервера' });
+    const hash = await bcrypt.hash(password, SOLT_ROUND);
+    const newUser = await User.create({
+      email, password: hash, name, about, avatar,
+    });
+    return res.status(STATUS_OK_CREATED).send({
+      _id: newUser._id,
+      name: newUser.name,
+      about: newUser.about,
+      avatar: newUser.avatar,
+      email: newUser.email,
+    });
+  } catch (error) {
+    if (error.code === MONGO_DUPLICATE_ERROR_CODE) {
+      throw new ConflictError('Такой пользователь уже существует');
+    }
+    if (error.name === 'ValidationError') {
+      throw new IncorrectDataError('Переданы неккоректные данные');
+    }
+    return next(error);
   }
 };
 
-export const editInfoUser = async (req, res) => {
+export const editInfoUser = async (req, res, next) => {
   try {
     const { name, about } = req.body;
     const user = await User.findByIdAndUpdate(
@@ -81,24 +116,16 @@ export const editInfoUser = async (req, res) => {
     return res.status(STATUS_OK).send({ name: user.name, about: user.about });
   } catch (error) {
     if (error.message === 'NotFoundError') {
-      return res.status(NOT_FOUND_ERROR).send({
-        message: 'Переданны не валидные данные',
-        error: error.message,
-      });
+      throw new NotFoundError('Пользователь не найден');
     }
     if (error.name === 'ValidationError') {
-      return res.status(INCORRECT_DATA).send({
-        message: 'Переданны не валидные данные',
-        error: error.message,
-      });
+      throw new IncorrectDataError('Переданы неккоректные данные');
     }
-    return res
-      .status(SERVER_ERROR)
-      .send({ message: 'Ошибка на стороне сервера' });
+    return next(error);
   }
 };
 
-export const editAvatarUser = async (req, res) => {
+export const editAvatarUser = async (req, res, next) => {
   try {
     const user = await User.findByIdAndUpdate(
       req.user._id,
@@ -108,18 +135,24 @@ export const editAvatarUser = async (req, res) => {
     return res.status(STATUS_OK).send({ avatar: user.avatar });
   } catch (error) {
     if (error.message === 'NotFoundError') {
-      return res
-        .status(NOT_FOUND_ERROR)
-        .send({ message: 'Пользователь по указанному ID не найден' });
+      throw new NotFoundError('Пользователь не найден');
     }
     if (error.name === 'ValidationError') {
-      return res.status(INCORRECT_DATA).send({
-        message: 'Переданны не валидные данные',
-        error: error.message,
-      });
+      throw new IncorrectDataError('Переданы неккоректные данные');
     }
-    return res
-      .status(SERVER_ERROR)
-      .send({ message: 'Ошибка на стороне сервера' });
+    return next(error);
+  }
+};
+
+export const getMyProfile = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      throw new NotFoundError('Пользователь не найден');
+    }
+    return res.status(STATUS_OK).send(user);
+  } catch (error) {
+    return next(error);
   }
 };

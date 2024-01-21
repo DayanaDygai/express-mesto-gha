@@ -1,23 +1,52 @@
 import mongoose, { Schema } from 'mongoose';
+import validator from 'validator';
+import isURL from 'validator/lib/isURL';
 
 const userSchema = new Schema(
   {
     name: {
       type: String,
-      required: true,
       minlength: [2, 'минимальная длинна 2 символа'],
       maxlength: [30, 'максимальная длинна 30 символов'],
+      default: 'Жак-Ив Кусто',
     },
     about: {
       type: String,
-      required: true,
       minlength: [2, 'минимальная длинна 2 символа'],
       maxlength: [30, 'максимальная длинна 30 символов'],
+      default: 'Исследователь',
     },
     avatar: {
       type: String,
-      required: true,
+      validate: {
+        validator: (url) => isURL.test(url),
+        message: 'Некорректный URL',
+      },
+      default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+
     },
+    email: {
+      type: String,
+      required: {
+        value: true,
+        message: 'Поле email яявляется обязательным',
+      },
+      validate: {
+        validator: (value) => validator.isEmail(value),
+        message: 'Некорректный формат email',
+      },
+    },
+
+    password: {
+      type: String,
+      required: {
+        value: true,
+        message: 'Поле password яявляется обязательным',
+      },
+      select: false,
+
+    },
+
   },
   { versionKey: false },
 );

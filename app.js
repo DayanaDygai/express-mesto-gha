@@ -1,7 +1,20 @@
+/* eslint-disable import/extensions */
 import express from 'express';
 import mongoose from 'mongoose';
-// eslint-disable-next-line import/extensions
+
+import dotenv from 'dotenv';
+
 import router from './routes/index.js';
+
+import handlerError from './middleware/handlerError.js';
+
+// eslint-disable-next-line import/no-unresolved
+import auth from './middleware/auth.js';
+
+dotenv.config();
+
+// eslint-disable-next-line import/first
+import { login, createUser } from './controllers/users.js';
 
 const NOT_FOUND_ERROR = 404;
 
@@ -11,18 +24,13 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '65a004911a89b42e39df9783', // вставьте сюда _id созданного в предыдущем пункте пользователя
-  };
+app.post('/signin', login);
+app.post('/signup', createUser);
 
-  next();
-});
-
+app.use(auth);
 app.use(router);
 
 app.use('*', (req, res) => res.status(NOT_FOUND_ERROR).send({ message: 'Страницы не существует' }));
+app.use(handlerError);
 
-app.listen(3000, () => {
-  console.log('Server listen port 3000');
-});
+app.listen(3000);
