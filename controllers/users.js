@@ -77,12 +77,6 @@ export const getUserById = async (req, res, next) => {
 
 export const createUser = async (req, res, next) => {
   try {
-    // const {
-    //   email, password, name, about, avatar,
-    // } = req.body;
-    // if (!password) {
-    //   throw new IncorrectDataError('Поле Password не заполнено');
-    // }
     const hash = await bcrypt.hash(req.body.password, SOLT_ROUND);
     const newUser = await User.create({
       email: req.body.email,

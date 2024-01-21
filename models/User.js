@@ -34,7 +34,6 @@ const userSchema = new Schema(
         validator: (value) => validator.isEmail(value),
         message: 'Некорректный формат email',
       },
-      unique: true,
     },
 
     password: {
