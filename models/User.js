@@ -1,6 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
 import validator from 'validator';
-import isURL from 'validator/lib/isURL';
 
 const userSchema = new Schema(
   {
@@ -19,7 +18,7 @@ const userSchema = new Schema(
     avatar: {
       type: String,
       validate: {
-        validator: (url) => isURL.test(url),
+        validator: (value) => validator.isURL(value, { protocols: ['http', 'https'], require_protocol: true }),
         message: 'Некорректный URL',
       },
       default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
