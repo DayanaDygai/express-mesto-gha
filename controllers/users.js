@@ -31,7 +31,7 @@ const SOLT_ROUND = 10;
 export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    const user = User.findOne({ email }.select('+password'));
+    const user = await User.findOne({ email }.select('+password'));
     if (!user) {
       throw new IncorrectDataError('Не верные логин или пароль');
     }
@@ -39,7 +39,7 @@ export const login = async (req, res, next) => {
     if (!matched) {
       throw new NotAuthenticateError('Не верные логин или пароль');
     }
-    const token = generateToken({ _id: user._id, email: user.email });
+    const token = generateToken({ _id: user._id });
     return res.status(STATUS_OK).send({ token });
   } catch (error) {
     return next(error);
