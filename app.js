@@ -48,7 +48,7 @@ app.post('/signup', celebrate({
 app.use(auth);
 app.use(router);
 
-app.use('*', (req, res) => res.status(NOT_FOUND_ERROR).send({ message: 'Страницы не существуе' }));
+app.use('*', (req, res) => res.status(NOT_FOUND_ERROR).send({ message: 'Страницы не существует' }));
 app.use(errors());
 app.use(handlerError);
 
