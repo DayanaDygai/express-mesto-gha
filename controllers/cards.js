@@ -37,16 +37,15 @@ export const createCard = async (req, res, next) => {
 export const deleteCardById = async (req, res, next) => {
   try {
     const { cardId } = req.params;
-    const owner = req.user._id;
     const card = await Card.findById(cardId);
     if (!card) {
       throw new IncorrectDataError('Карточки с указанным ID не существует');
     }
-    if (card.owner.toString() !== owner) {
+    if (card.owner.toString() !== req.user._id) {
       throw new ForibiddenError('Нет прав для удаления карточки');
     }
-    const deletedCard = await Card.deleteOne({ _id: cardId });
-    return res.status(STATUS_OK).send({ deletedCard });
+    await Card.deleteOne({ _id: cardId });
+    return res.status(STATUS_OK).send({ message: 'Карточка успешно удалена.' });
   } catch (error) {
     if (error.name === 'CastError') {
       throw new IncorrectDataError('Указан некорретный ID');
