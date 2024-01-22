@@ -39,7 +39,7 @@ export const deleteCardById = async (req, res, next) => {
     const { cardId } = req.params;
     const card = await Card.findById(cardId);
     if (!card) {
-      throw new IncorrectDataError('Карточки с указанным ID не существует');
+      throw new NotFoundError('Карточки с указанным ID не существует');
     }
     if (card.owner.toString() !== req.user._id) {
       throw new ForibiddenError('Нет прав для удаления карточки');
