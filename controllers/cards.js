@@ -45,7 +45,7 @@ export const deleteCardById = async (req, res, next) => {
       throw new ForibiddenError('Нет прав для удаления карточки');
     }
     await Card.deleteOne({ _id: cardId });
-    return res.status(STATUS_OK).send({ message: 'Карточка успешно удалена.' });
+    return res.status(STATUS_OK).send(card);
   } catch (error) {
     if (error.name === 'CastError') {
       throw new IncorrectDataError('Указан некорретный ID');

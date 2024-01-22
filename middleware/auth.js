@@ -7,7 +7,7 @@ import NotAuthenticateError from '../errors/NotAuthenticateError.js';
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 // eslint-disable-next-line func-names
-export default function (req, res, next) {
+const auth = (req, res, next) => {
   let payload;
   try {
     const token = req.headers.authorization;
@@ -29,4 +29,6 @@ export default function (req, res, next) {
 
   req.user = payload;
   next();
-}
+};
+
+export default auth;
