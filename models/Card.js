@@ -15,7 +15,7 @@ const cardSchema = new Schema(
       type: String,
       required: true,
       validate: {
-        validator: (value) => validator.isURL(value, { protocols: ['http', 'https'], require_protocol: true }),
+        validator: (url) => validator.isURL(url),
         message: 'Неверный формат ссылки',
       },
     },
