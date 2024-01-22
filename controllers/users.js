@@ -31,9 +31,9 @@ const SOLT_ROUND = 10;
 export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email }.select('+password'));
+    const user = await User.findOne({ email }).select('+password');
     if (!user) {
-      throw new IncorrectDataError('Не верные логин или пароль');
+      throw new NotAuthenticateError('Не верные логин или пароль');
     }
     const matched = await bcrypt.compare(password, user.password);
     if (!matched) {
@@ -64,11 +64,11 @@ export const getUserById = async (req, res, next) => {
     return res.status(STATUS_OK).send({ data: user });
   } catch (error) {
     if (error.message === 'NotFoundError') {
-      throw new NotFoundError('Пользователь с данным ID не найден');
+      return next(new NotFoundError('Пользователь с данным ID не найден'));
     }
 
     if (error.name === 'CastError') {
-      throw new IncorrectDataError('Передан некорректный ID');
+      return next(new IncorrectDataError('Передан некорректный ID'));
     }
 
     return next(error);
@@ -94,10 +94,10 @@ export const createUser = async (req, res, next) => {
     });
   } catch (error) {
     if (error.code === MONGO_DUPLICATE_ERROR_CODE) {
-      throw new ConflictError('Такой пользователь уже существует');
+      return next(new ConflictError('Такой пользователь уже существует'));
     }
     if (error.name === 'ValidationError') {
-      throw new NotAuthenticateError('Переданы неккоректные данные');
+      return next(new NotAuthenticateError('Переданы неккоректные данные'));
     }
     return next(error);
   }
@@ -114,10 +114,10 @@ export const editInfoUser = async (req, res, next) => {
     return res.status(STATUS_OK).send({ name: user.name, about: user.about });
   } catch (error) {
     if (error.message === 'NotFoundError') {
-      throw new NotFoundError('Пользователь не найден');
+      return next(new NotFoundError('Пользователь не найден'));
     }
     if (error.name === 'ValidationError') {
-      throw new IncorrectDataError('Переданы неккоректные данные');
+      return next(new IncorrectDataError('Переданы неккоректные данные'));
     }
     return next(error);
   }
@@ -133,10 +133,10 @@ export const editAvatarUser = async (req, res, next) => {
     return res.status(STATUS_OK).send({ avatar: user.avatar });
   } catch (error) {
     if (error.message === 'NotFoundError') {
-      throw new NotFoundError('Пользователь не найден');
+      return next(new NotFoundError('Пользователь не найден'));
     }
     if (error.name === 'ValidationError') {
-      throw new IncorrectDataError('Переданы неккоректные данные');
+      return next(new IncorrectDataError('Переданы неккоректные данные'));
     }
     return next(error);
   }

@@ -10,6 +10,8 @@ import {
   getMyProfile,
 // eslint-disable-next-line import/extensions
 } from '../controllers/users.js';
+// eslint-disable-next-line import/extensions
+import validateUrl from '../utils/constants.js';
 
 const userRouter = Router();
 
@@ -29,7 +31,7 @@ userRouter.patch('/me', celebrate({
 userRouter.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
     avatar: Joi.string().regex(
-      /^https?:\/\/(?:www\.)?[a-zA-Z0-9-._~:/?#[\]@!$&`()*+,;=]+#?/,
+      validateUrl,
     ),
   }),
 }), editAvatarUser);

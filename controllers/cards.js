@@ -28,7 +28,7 @@ export const createCard = async (req, res, next) => {
     return res.status(STATUS_OK_CREATED).send(card);
   } catch (error) {
     if (error.name === 'ValidationError') {
-      throw new IncorrectDataError('Переданны некорректные данны');
+      return next(new IncorrectDataError('Переданны некорректные данны'));
     }
     return next(error);
   }
@@ -48,7 +48,7 @@ export const deleteCardById = async (req, res, next) => {
     return res.status(STATUS_OK).send(card);
   } catch (error) {
     if (error.name === 'CastError') {
-      throw new IncorrectDataError('Указан некорретный ID');
+      return next(new IncorrectDataError('Указан некорретный ID'));
     }
     return next(error);
   }
@@ -65,10 +65,10 @@ export const likeCard = async (req, res, next) => {
     return res.status(STATUS_OK).send(card);
   } catch (error) {
     if (error.message === 'NotFoundError') {
-      throw new NotFoundError('Пользователь по указанному ID не найден');
+      return next(new NotFoundError('Пользователь по указанному ID не найден'));
     }
     if (error.name === 'CastError') {
-      throw new IncorrectDataError('Указан некорретный ID');
+      return next(new IncorrectDataError('Указан некорретный ID'));
     }
     return next(error);
   }
@@ -85,10 +85,10 @@ export const deleteLikeCard = async (req, res, next) => {
     return res.status(STATUS_OK).send({ card });
   } catch (error) {
     if (error.message === 'NotFoundError') {
-      throw new NotFoundError('Пользователь по указанному ID не найден');
+      return next(new NotFoundError('Пользователь по указанному ID не найден'));
     }
     if (error.name === 'CastError') {
-      throw new NotFoundError('Указан некорретный ID');
+      return next(new NotFoundError('Указан некорретный ID'));
     }
     return next(error);
   }

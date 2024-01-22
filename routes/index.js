@@ -14,6 +14,8 @@ import { celebrate, Joi } from 'celebrate';
 
 import auth from '../middleware/auth.js';
 
+import validateUrl from '../utils/constants.js';
+
 const router = Router();
 
 router.post('/signin', celebrate({
@@ -28,7 +30,7 @@ router.post('/signup', celebrate({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
     avatar: Joi.string().regex(
-      /^https?:\/\/(?:www\.)?[a-zA-Z0-9-._~:/?#[\]@!$&`()*+,;=]+#?/,
+      validateUrl,
     ),
     email: Joi.string().required().email(),
     password: Joi.string().required().min(8),
